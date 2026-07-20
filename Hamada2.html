@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مجموعة العربي - نظام الانتظار والمبيعات</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Cairo Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            200: '#bae0fd',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style> body { font-family: 'Cairo', sans-serif; } </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen font-sans">
+
+    <!-- Header / Navbar -->
+    <header class="bg-brand-900 text-white shadow-xl sticky top-0 z-50 border-b border-brand-700">
+        <div class="max-w-7xl mx-auto px-4 py-3.5 flex justify-between items-center">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center shadow-lg shadow-brand-500/30">
+                    <i class="fa-solid fa-store text-xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-black tracking-wide leading-none text-white">مجموعة العربي</h1>
+                    <span class="text-[10px] text-brand-100 opacity-80">El Araby Group - Sales Portal</span>
+                </div>
+            </div>
+            
+            <div id="userInfo" class="hidden flex items-center gap-3">
+                <div class="text-left text-xs">
+                    <span id="userNameDisplay" class="font-bold text-sm block text-white"></span>
+                    <span id="userRoleBadge" class="inline-block bg-brand-800 text-brand-100 px-2.5 py-0.5 rounded-full border border-brand-600"></span>
+                </div>
+                <button onclick="logout()" class="bg-red-500/20 hover:bg-red-600 text-red-200 hover:text-white px-3 py-1.5 rounded-xl text-xs font-semibold transition border border-red-500/30">
+                    <i class="fa-solid fa-power-off ml-1"></i> خروج
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-4 md:p-6">
+
+        <!-- Login Screen -->
+        <div id="loginScreen" class="max-w-md mx-auto my-12 bg-white/95 backdrop-blur-md p-8 rounded-3xl shadow-xl border border-brand-100">
+            <div class="text-center mb-6">
+                <div class="w-20 h-20 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl shadow-inner border border-brand-100">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h2 class="text-2xl font-extrabold text-brand-900">تسجيل الدخول</h2>
+                <p class="text-slate-500 text-xs mt-1">بوابة إدارة المبيعات وقائمة الانتظار</p>
+            </div>
+
+            <!-- Login Credentials Helper Box -->
+            <div class="bg-brand-50 border border-brand-200 rounded-2xl p-3.5 mb-6 text-xs text-brand-900 leading-relaxed">
+                <span class="font-bold block mb-1">🔑 بيانات الدخول التجريبية:</span>
+                • <b>المدير (كل الطلبات):</b> <code class="bg-brand-100 px-1.5 py-0.5 rounded text-brand-800 font-bold">admin</code> | كلمة السر <code class="bg-brand-100 px-1.5 py-0.5 rounded text-brand-800 font-bold">1234</code><br>
+                • <b>سيلز 1 (طلباته فقط):</b> <code class="bg-brand-100 px-1.5 py-0.5 rounded text-brand-800 font-bold">sales1</code> | كلمة السر <code class="bg-brand-100 px-1.5 py-0.5 rounded text-brand-800 font-bold">1234</code>
+            </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold mb-1.5 text-slate-700">اسم المستخدم</label>
+                    <input type="text" id="loginUsername" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-brand-500 focus:bg-white focus:outline-none transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold mb-1.5 text-slate-700">كلمة السر</label>
+                    <input type="password" id="loginPassword" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-brand-500 focus:bg-white focus:outline-none transition">
+                </div>
+                <button type="submit" id="loginBtn" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-brand-600/30 transition duration-200 active:scale-[0.98]">
+                    دخول للنظام
+                </button>
+            </form>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="dashboard" class="hidden space-y-6">
+
+            <!-- Admin Panel: Sales Team Management -->
+            <div id="adminPanel" class="hidden bg-white p-6 rounded-3xl shadow-sm border border-brand-100">
+                <h3 class="text-base font-bold text-brand-900 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-users-gear text-brand-600"></i> إدارة فريق المبيعات (خاص بالمدير)
+                </h3>
+                
+                <form onsubmit="addSalesUser(event)" class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6 bg-brand-50/50 p-4 rounded-2xl border border-brand-100">
+                    <input type="text" id="newSalesName" placeholder="اسم مسئول المبيعات" required class="border border-slate-200 rounded-xl px-3.5 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    <input type="text" id="newSalesUsername" placeholder="اسم المستخدم (Username)" required class="border border-slate-200 rounded-xl px-3.5 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    <div class="flex gap-2">
+                        <input type="password" id="newSalesPassword" placeholder="كلمة السر" required class="w-full border border-slate-200 rounded-xl px-3.5 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        <button type="submit" class="bg-brand-900 hover:bg-black text-white px-5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition">
+                            إضافة
+                        </button>
+                    </div>
+                </form>
+
+                <div class="overflow-x-auto rounded-xl border border-slate-100">
+                    <table class="w-full text-right text-sm">
+                        <thead class="bg-brand-50 text-brand-800 font-semibold border-b border-brand-100">
+                            <tr>
+                                <th class="p-3">الاسم</th>
+                                <th class="p-3">اسم المستخدم</th>
+                                <th class="p-3">كلمة السر</th>
+                                <th class="p-3 text-center">الإجراء</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salesUsersList" class="divide-y divide-slate-100"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Main Work Area -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- New Order / Waiting Form -->
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-brand-100 lg:col-span-1 h-fit">
+                    <h3 class="text-base font-bold text-brand-900 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-cart-plus text-brand-600"></i> تسجيل طلب / عميل جديد
+                    </h3>
+                    
+                    <form onsubmit="addWaitingCustomer(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold mb-1 text-slate-700">اسم العميل</label>
+                            <input type="text" id="custName" required placeholder="مثال: محمود أحمد" class="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold mb-1 text-slate-700">رقم الهاتف</label>
+                            <input type="tel" id="custPhone" required placeholder="01xxxxxxxxx" class="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold mb-1 text-slate-700">المنتج المطلوب</label>
+                            <input type="text" id="custProduct" required placeholder="مثال: ثلاجة العربي 16 قدم" class="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold mb-1 text-slate-700">مسئول المبيعات</label>
+                            <input type="text" id="salesName" required readonly class="w-full border border-slate-200 bg-slate-100 text-slate-500 rounded-xl px-3.5 py-2.5 text-sm cursor-not-allowed">
+                        </div>
+                        <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-brand-600/20 active:scale-[0.98]">
+                            حفظ وحجز الطلب
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Orders / Waiting List Display -->
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-brand-100 lg:col-span-2 space-y-4">
+                    
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <div>
+                            <h3 class="text-base font-bold text-brand-900 flex items-center gap-2">
+                                <i class="fa-solid fa-list-check text-brand-600"></i> قائمة الطلبات (<span id="totalCount">0</span>)
+                            </h3>
+                            <p id="viewScopeText" class="text-[11px] text-slate-500 mt-0.5"></p>
+                        </div>
+                        
+                        <!-- Search Bar -->
+                        <div class="relative w-full sm:w-64">
+                            <i class="fa-solid fa-magnifying-glass absolute right-3 top-3 text-slate-400 text-xs"></i>
+                            <input type="text" id="searchInput" oninput="renderWaitingList()" placeholder="بحث باسم العميل أو المنتج..." class="w-full pr-8 pl-4 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <!-- Orders Table -->
+                    <div class="overflow-x-auto border border-slate-100 rounded-2xl">
+                        <table class="w-full text-right text-xs">
+                            <thead class="bg-brand-50 text-brand-800 font-semibold border-b border-brand-100">
+                                <tr>
+                                    <th class="p-3">العميل والتواصل</th>
+                                    <th class="p-3">المنتج</th>
+                                    <th class="p-3">المبيعات</th>
+                                    <th class="p-3">حالة الطلب</th>
+                                    <th class="p-3 text-center">إجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="waitingTableBody" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Firebase Engine and Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, push, onValue, remove, set, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const defaultUsers = {
+            "admin_default": { name: "المدير العام", username: "admin", password: "1234", role: "admin" },
+            "sales1_default": { name: "أحمد السيلز", username: "sales1", password: "1234", role: "sales" }
+        };
+
+        let db = null;
+        try {
+            if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY") {
+                const app = initializeApp(firebaseConfig);
+                db = getDatabase(app);
+            }
+        } catch(e) {
+            console.warn("Firebase Running in Standalone Local Storage Mode.");
+        }
+
+        function getSavedWaitingData() {
+            try {
+                const key1 = localStorage.getItem('araby_waiting_local');
+                const key2 = localStorage.getItem('waitingData');
+                let merged = {};
+                if (key1) Object.assign(merged, JSON.parse(key1));
+                if (key2) Object.assign(merged, JSON.parse(key2));
+                return merged;
+            } catch(e) {
+                return {};
+            }
+        }
+
+        function getSavedUsersData() {
+            try {
+                const key1 = localStorage.getItem('araby_users_local');
+                const key2 = localStorage.getItem('usersData');
+                let merged = { ...defaultUsers };
+                if (key1) Object.assign(merged, JSON.parse(key1));
+                if (key2) Object.assign(merged, JSON.parse(key2));
+                return merged;
+            } catch(e) {
+                return defaultUsers;
+            }
+        }
+
+        window.currentUser = JSON.parse(sessionStorage.getItem('araby_user')) || null;
+        window.waitingData = getSavedWaitingData();
+        window.usersData = getSavedUsersData();
+
+        if (db) {
+            onValue(ref(db, 'waitingList'), (snapshot) => {
+                if (snapshot.exists()) {
+                    window.waitingData = { ...window.waitingData, ...snapshot.val() };
+                    localStorage.setItem('araby_waiting_local', JSON.stringify(window.waitingData));
+                }
+                if (window.currentUser) renderWaitingList();
+            });
+
+            onValue(ref(db, 'users'), (snapshot) => {
+                if (snapshot.exists()) {
+                    window.usersData = { ...window.usersData, ...snapshot.val() };
+                    localStorage.setItem('araby_users_local', JSON.stringify(window.usersData));
+                }
+                if (window.currentUser && window.currentUser.role === 'admin') renderSalesUsers();
+            });
+        }
+
+        window.handleLogin = function(e) {
+            e.preventDefault();
+            const u = document.getElementById('loginUsername').value.trim();
+            const p = document.getElementById('loginPassword').value.trim();
+
+            const allUsers = Object.values(window.usersData);
+            let found = allUsers.find(user => user && user.username && user.username.toLowerCase() === u.toLowerCase() && user.password === p);
+
+            if (found) {
+                window.currentUser = found;
+                sessionStorage.setItem('araby_user', JSON.stringify(found));
+                showDashboard();
+            } else {
+                alert('اسم المستخدم أو كلمة السر غير صحيحة!');
+            }
+        };
+
+        window.logout = function() {
+            window.currentUser = null;
+            sessionStorage.removeItem('araby_user');
+            location.reload();
+        };
+
+        function showDashboard() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('userInfo').classList.remove('hidden');
+
+            document.getElementById('userNameDisplay').innerText = window.currentUser.name;
+            document.getElementById('userRoleBadge').innerText = window.currentUser.role === 'admin' ? 'مدير النظام' : 'مبيعات (سيلز)';
+            document.getElementById('salesName').value = window.currentUser.name;
+
+            if (window.currentUser.role === 'admin') {
+                document.getElementById('adminPanel').classList.remove('hidden');
+                document.getElementById('viewScopeText').innerText = 'عرض كافة الطلبات لكافة أعضاء الفريق';
+                renderSalesUsers();
+            } else {
+                document.getElementById('adminPanel').classList.add('hidden');
+                document.getElementById('viewScopeText').innerText = '🔒 تعرض فقط الطلبات المسجلة ببياناتك الشخصية';
+            }
+
+            renderWaitingList();
+        }
+
+        window.addSalesUser = function(e) {
+            e.preventDefault();
+            const name = document.getElementById('newSalesName').value.trim();
+            const username = document.getElementById('newSalesUsername').value.trim();
+            const password = document.getElementById('newSalesPassword').value.trim();
+
+            const newUser = { name, username, password, role: 'sales' };
+            const newKey = 'user_' + Date.now();
+
+            window.usersData[newKey] = newUser;
+            localStorage.setItem('araby_users_local', JSON.stringify(window.usersData));
+
+            if (db) set(ref(db, 'users/' + newKey), newUser);
+
+            renderSalesUsers();
+            e.target.reset();
+        };
+
+        window.deleteSalesUser = function(key) {
+            if (confirm('حذف موظف المبيعات؟')) {
+                delete window.usersData[key];
+                localStorage.setItem('araby_users_local', JSON.stringify(window.usersData));
+                if (db) remove(ref(db, 'users/' + key));
+                renderSalesUsers();
+            }
+        };
+
+        function renderSalesUsers() {
+            const tbody = document.getElementById('salesUsersList');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            Object.entries(window.usersData).forEach(([key, u]) => {
+                if (u && u.role === 'sales') {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="p-3 font-semibold text-slate-800">${u.name}</td>
+                        <td class="p-3 text-slate-500">${u.username}</td>
+                        <td class="p-3 text-slate-500">${u.password}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="deleteSalesUser('${key}')" class="text-red-500 hover:bg-red-50 px-2 py-1 rounded-lg transition">حذف</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                }
