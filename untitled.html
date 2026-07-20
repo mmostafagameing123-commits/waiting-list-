@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>قائمة الانتظار - مجموعة العربي</title>
+    <style>
+        :root {
+            --primary: #004b93;
+            --primary-dark: #003366;
+            --primary-light: #e8f1f9;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --border: #e2e8f0;
+            --shadow: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -4px rgba(0,0,0,0.05);
+            --radius: 12px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            padding: 20px 10px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .main-wrapper {
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        /* شاشة تسجيل الدخول */
+        .login-card {
+            max-width: 400px;
+            margin: 60px auto;
+            background: var(--card-bg);
+            padding: 35px 30px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .brand-logo {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .login-card h2 {
+            color: var(--primary);
+            margin-bottom: 5px;
+            font-size: 22px;
+        }
+
+        .login-card p {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+            text-align: right;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-main);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s;
+            background: #fafafa;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(0, 75, 147, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn:hover { background: var(--primary-dark); }
+
+        .btn-danger {
+            background: #fee2e2;
+            color: var(--danger);
+            border: 1px solid #fca5a5;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-danger:hover { background: var(--danger); color: white; }
+
+        /* Dashboard Header */
+        header {
+            background: var(--card-bg);
+            padding: 15px 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        header h3 {
+            color: var(--primary);
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-badge {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Cards Layout */
+        .card {
+            background: var(--card-bg);
+            padding: 22px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-header h4 {
+            color: var(--primary);
+            font-size: 16px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+        }
+
+        .product-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .btn-add-prod {
+            background: var(--primary-light);
+            color: var(--primary);
+            border: 1px dashed var(--primary);
+            padding: 8px;
+            border-radius: 6px;
+            width: 100%;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        /* Table Design */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+            font-size: 13px;
+            min-width: 750px;
+        }
+
+        th {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 12px;
+            font-weight: 700;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:hover td {
+            background: #f8fafc;
+        }
+
+        .tag {
+            background: #f1f5f9;
+            color: #334155;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            display: inline-block;
+            margin: 2px;
+            border: 1px solid var(--border);
+        }
+
+        .date-badge {
+            font-size: 11px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .btn-wa {
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: 0.2s;
+        }
+
+        .btn-wa:hover {
+            background: #1eb956;
+        }
+
+        .phone-btn {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .sales-item {
+            background: var(--bg);
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-top: 8px;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border);
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="main-wrapper">
+
+        <!-- شاشة تسجيل الدخول -->
+        <div id="loginSection" class="login-card">
+            <div class="brand-logo">EL</div>
+            <h2>مجموعة العربي</h2>
+            <p>نظام إدارة قائمة الانتظار والمبيعات</p>
+            
+            <form onsubmit="login(event)">
+                <div class="form-group">
+                    <label>اسم المستخدم</label>
+                    <input type="text" id="userInput" class="form-control" placeholder="أدخل اسم المستخدم" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>كلمة المرور</label>
+                    <input type="password" id="passInput" class="form-control" placeholder="أدخل كلمة المرور" required>
+                </div>
+
+                <button type="submit" class="btn">تسجيل الدخول</button>
+            </form>
+        </div>
+
+        <!-- لوحة التحكم الرئيسية -->
+        <div id="dashboardSection" class="hidden">
+            
+            <!-- الهيدر -->
+            <header>
+                <div>
+                    <h3>🏢 مجموعة العربي <span id="userBadge" class="user-badge"></span></h3>
+                </div>
+                <button class="btn-danger" onclick="logout()">تسجيل خروج</button>
+            </header>
+
+            <!-- لوحة تحكم المدير (إدارة الموظفين والرسائل) -->
+            <div id="adminPanel" class="card hidden">
+                <div class="card-header">
+                    <h4>⚙️ إعدادات المدير (إدارة الموظفين ورسائل الواتساب)</h4>
+                </div>
+                
+                <!-- قسم إضافة الموظفين -->
+                <h5 style="color: var(--primary); margin-bottom: 8px;">إضافة موظف مبيعات جديد:</h5>
+                <div class="grid-3" style="margin-bottom: 12px;">
+                    <input type="text" id="salesName" class="form-control" placeholder="اسم الموظف">
+                    <input type="text" id="salesUser" class="form-control" placeholder="اسم المستخدم">
+                    <input type="password" id="salesPass" class="form-control" placeholder="كلمة السر">
+                </div>
+                <button class="btn" style="width: auto; padding: 8px 20px;" onclick="addSales()">إضافة الموظف</button>
+                
+                <div id="salesList" style="margin-top: 10px;"></div>
+
+                <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--border);">
+
+                <!-- قسم تخصيص رسالة الواتساب -->
+                <h5 style="color: var(--primary); margin-bottom: 8px;">📲 تخصيص رسالة الواتساب الترحيبية للعملاء:</h5>
+                <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">
+                    استخدم الكلمات المفتاحية التالية ليتم استبدالها تلقائياً عند الإرسال: <br>
+                    • <b>{اسم_العميل}</b> لإظهار اسم العميل <br>
+                    • <b>{المنتجات}</b> لإظهار المنتجات المطلوبة
+                </p>
+                <textarea id="waTemplateInput" class="form-control" rows="3" style="margin-bottom: 10px;"></textarea>
+                <button class="btn" style="width: auto; padding: 8px 20px; background: var(--success);" onclick="saveWaTemplate()">حفظ صيغة الرسالة</button>
+            </div>
+
+            <!-- نموذج تسجيل عميل جديد -->
+            <div class="card">
+                <div class="card-header">
+                    <h4>➕ إضافة عميل في قائمة الانتظار</h4>
+                </div>
+                <form onsubmit="saveClient(event)">
+                    <div class="grid-3" style="margin-bottom: 15px;">
+                        <div class="form-group" style="margin: 0;">
+                            <label>اسم العميل</label>
+                            <input type="text" id="cName" class="form-control" required placeholder="مثال: أحمد محمود">
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <label>رقم الهاتف</label>
+                            <input type="tel" id="cPhone" class="form-control" required placeholder="010xxxxxxxx">
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <label>العنوان</label>
+                            <input type="text" id="cAddr" class="form-control" required placeholder="المدينة / المنطقة">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>المنتجات المطلوبة</label>
+                        <div id="productsBox">
+                            <div class="product-group">
+                                <input type="text" class="form-control prod-input" required placeholder="اسم المنتج (مثال: شاشة تورنادو 55)">
+                            </div>
+                        </div>
+                        <button type="button" class="btn-add-prod" onclick="addProductInput()">+ إضافة منتج آخر للعميل</button>
+                    </div>
+
+                    <button type="submit" class="btn">حفظ العميل في السجل</button>
+                </form>
+            </div>
+
+            <!-- جدول البيانات والبحث -->
+            <div class="card">
+                <div class="card-header">
+                    <h4>📋 قائمة انتظار العملاء</h4>
+                    <input type="text" id="searchBox" onkeyup="renderTable()" class="form-control" placeholder="🔍 بحث عن عميل، هاتف أو منتج..." style="max-width: 250px;">
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>تاريخ الطلب</th>
+                                <th>العميل</th>
+                                <th>رقم الهاتف</th>
+                                <th>العنوان</th>
+                                <th>المنتجات المطلوب توفرها</th>
+                                <th>الموظف المسؤول</th>
+                                <th>التواصل والتنفيذ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        // Accounts Data
+        let accounts = JSON.parse(localStorage.getItem('araby_accounts')) || [
+            { id: 1, name: "المدير العام", user: "admin", pass: "admin123", role: "admin" },
+            { id: 2, name: "سارة أحمد", user: "sara", pass: "123", role: "sales" }
+        ];
+
+        let clients = JSON.parse(localStorage.getItem('araby_clients')) || [];
+        let activeUser = null;
+
+        // القالب الافتراضي لرسالة الواتساب
+        let defaultTemplate = "مرحباً أستاذ {اسم_العميل}، يسعدنا إبلاغك من شركة العربي بأن المنتج الذي طلبت توفره ({المنتجات}) أصبح متوفراً الآن! يمكنك زيارتنا أو الطلب فوراً.";
+        let waTemplate = localStorage.getItem('araby_wa_template') || defaultTemplate;
+
+        function saveAccountsToStorage() {
+            localStorage.setItem('araby_accounts', JSON.stringify(accounts));
+        }
+
+        function saveClientsToStorage() {
+            localStorage.setItem('araby_clients', JSON.stringify(clients));
+        }
+
+        function saveWaTemplate() {
+            let text = document.getElementById('waTemplateInput').value.trim();
+            if (text) {
+                waTemplate = text;
+                localStorage.setItem('araby_wa_template', waTemplate);
+                alert("تم حفظ صيغة رسالة الواتساب بنجاح!");
+            } else {
+                alert("يرجى كتابة نص الرسالة أولاً");
+            }
+        }
+
+        function login(e) {
+            if(e) e.preventDefault();
+            let u = document.getElementById('userInput').value.trim().toLowerCase();
+            let p = document.getElementById('passInput').value.trim();
+
+            let account = accounts.find(a => a.user.toLowerCase() === u && a.pass === p);
+
+            if (account) {
+                activeUser = account;
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('dashboardSection').classList.remove('hidden');
+                document.getElementById('userBadge').innerText = `${account.name} (${account.role === 'admin' ? 'مدير' : 'سيلز'})`;
+
+                if (account.role === 'admin') {
+                    document.getElementById('adminPanel').classList.remove('hidden');
+                    document.getElementById('waTemplateInput').value = waTemplate;
+                    renderSales();
+                } else {
+                    document.getElementById('adminPanel').classList.add('hidden');
+                }
+
+                renderTable();
+            } else {
+                alert("اسم المستخدم أو كلمة المرور غير صحيحة!");
+            }
+        }
+
+        function logout() {
+            activeUser = null;
+            document.getElementById('dashboardSection').classList.add('hidden');
+            document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('userInput').value = '';
+            document.getElementById('passInput').value = '';
+        }
+
+        function addProductInput() {
+            let box = document.getElementById('productsBox');
+            let div = document.createElement('div');
+            div.className = 'product-group';
+            div.innerHTML = `
+                <input type="text" class="form-control prod-input" placeholder="منتج إضافي" required>
+                <button type="button" onclick="this.parentElement.remove()" style="background:#fee2e2; color:red; border:none; padding:0 12px; border-radius:6px; cursor:pointer;">X</button>
+            `;
+            box.appendChild(div);
+        }
+
+        function saveClient(e) {
+            e.preventDefault();
+            let prodInputs = document.querySelectorAll('.prod-input');
+            let prodList = [];
+            prodInputs.forEach(input => {
+                if(input.value.trim() !== '') prodList.push(input.value.trim());
+            });
+
+            let now = new Date();
+            let dateStr = now.toLocaleDateString('ar-EG', { year: 'numeric', month: 'numeric', day: 'numeric' });
+            let timeStr = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+            let fullDate = `${dateStr} (${timeStr})`;
+
+            let client = {
+                id: Date.now(),
+                date: fullDate,
+                name: document.getElementById('cName').value.trim(),
+                phone: document.getElementById('cPhone').value.trim(),
+                addr: document.getElementById('cAddr').value.trim(),
+                products: prodList,
+                salesUser: activeUser.user,
+                salesName: activeUser.name
+            };
+
+            clients.push(client);
+            saveClientsToStorage();
+
+            // Reset Form
+            document.getElementById('cName').value = '';
+            document.getElementById('cPhone').value = '';
+            document.getElementById('cAddr').value = '';
+            document.getElementById('productsBox').innerHTML = `
+                <div class="product-group">
+                    <input type="text" class="form-control prod-input" required placeholder="اسم المنتج (مثال: شاشة تورنادو 55)">
+                </div>
+            `;
+
+            renderTable();
+            alert("تم حفظ بيانات العميل وتاريخ الطلب بنجاح!");
+        }
+
+        function renderTable() {
+            let tbody = document.getElementById('tableBody');
+            let search = document.getElementById('searchBox').value.toLowerCase().trim();
+            tbody.innerHTML = '';
+
+            let list = clients;
+            if (activeUser.role !== 'admin') {
+                list = list.filter(c => c.salesUser === activeUser.user);
+            }
+
+            list = list.filter(c => 
+                c.name.toLowerCase().includes(search) ||
+                c.phone.includes(search) ||
+                c.products.some(p => p.toLowerCase().includes(search)) ||
+                (c.date && c.date.includes(search))
+            );
+
+            i
